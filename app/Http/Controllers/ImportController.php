@@ -118,33 +118,50 @@ class ImportController extends Controller
                 $NEW_AGR, 
                 $AOR ) = $data;
 
-            if ($STORENAME != 'STORE_NAME') {
+            if (trim($STORENAME) != 'STORENAME') {
 
-                $week = 1;
+                $week = date("w");
 
-                $store_id = self::getStoreIdByStoreName($STORENAME);
+                $year = date("Y");
 
-                echo $store_id;
+                $store = explode(' ', $STORENAME);
+
                 
-                if ($store_id > 0) {
+                // $store_id = self::getStoreIdByStoreName($STORENAME);
+
+                // echo count($store);
+                //echo " / ";
+                // echo $STORENAME;
+                // print_r($store);
+                // echo $store[count($store) - 1];
+                // echo "<br />";
+
+                $store_id = end($store);
+                
+                if (count($store) > 1 && $store_id > 0) {
+
+                    
 
                     $cond = ['store_id' => $store_id, 'week_number' => $week];
+
+                    echo $NEW_AGR;
 
                     $insert = [
                             'week_number' => $week,
                             'store_id' => $store_id,
                             'year' => $year,
-                            'STORENAME' => $STORENAME, 
-                            'MANAGER' => $MANAGER, 
+                            //'STORENAME' => $STORENAME, 
+                            //'MANAGER' => $MANAGER, 
                             'PR_WK_COR' => $PR_WK_COR, 
                             'CUR_WK_COR' => $CUR_WK_COR, 
-                            'STRE_OPEN_DATE' => $STRE_OPEN_DATE, 
+                            'STRE_OPEN_DATE' => self::toMySql($STRE_OPEN_DATE), 
                             'WKS_OPEN' => $WKS_OPEN, 
                             'ANDER_EQUIV' => $ANDER_EQUIV, 
                             'ANDER_PCT_COMP' => $ANDER_PCT_COMP, 
                             'WK_PAY_OFF' => $WK_PAY_OFF, 
                             'CUST_RENT' => $CUST_RENT, 
-                            'NEW_AGR' => $NEW_AGR, 
+                            'NEW_AGR' => (int)$NEW_AGR, 
+                            'agr_total' => 0,
                             'CASH_SALES' => $CASH_SALES, 
                             'SERVICE_REVENUE' => $SERVICE_REVENUE, 
                             'PCT_MARGIN' => $PCT_MARGIN, 
@@ -210,7 +227,7 @@ class ImportController extends Controller
                             'NUMMISCCLUB' => $NUMMISCCLUB, 
                             'TPMSCOUNTSALES' => $TPMSCOUNTSALES, 
                             'TPMSSALEAMT' => $TPMSSALEAMT, 
-                            'NEW_AGR' => $NEW_AGR, 
+                            //'NEW_AGR' => $NEW_AGR, 
                             'AOR' => $AOR 
                         ];
 
@@ -253,9 +270,11 @@ class ImportController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function toMySql(string $date)
     {
-        //
+        list($month, $day, $year) = explode('/', $date);
+
+        return sprintf("%s-%02d-%02d", $year, $month, $day);
     }
 
     /**
