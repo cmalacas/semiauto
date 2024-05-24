@@ -16,7 +16,98 @@ class ImportController extends Controller
      */
     public function index()
     {
-        return view('import.index');
+        $columns = [
+                    'STORENAME', 
+                    'MANAGER', 
+                    'PR_WK_COR', 
+                    'CUR_WK_COR', 
+                    'STRE_OPEN_DATE', 
+                    'WKS_OPEN', 
+                    'ANDER_EQUIV', 
+                    'ANDER_PCT_COMP', 
+                    'WK_PAY_OFF', 
+                    'CUST_RENT', 
+                    'NEW_AGR', 
+                    'CASH_SALES', 
+                    'SERVICE_REVENUE', 
+                    'PCT_MARGIN', 
+                    'PCT_CUST_RENT', 
+                    'PCT_CUST_RENT_YEAR', 
+                    'AVG_TURN', 
+                    'SAT_CLOSE', 
+                    'SAT_CLOSE_7', 
+                    'SAT_CLOSE_14', 
+                    'SAT_CLOSE_21', 
+                    'SAT_CLOSE_30', 
+                    'SAT_CLOSE_OVR30', 
+                    'SKIPS', 
+                    'SKIP_RATIO', 
+                    'SKIP_RATIO_MONTH', 
+                    'REPOS', 
+                    '$ALIGN_PCT', 
+                    'NEWALIGN_PCT', 
+                    'AUTOPAY_PCT', 
+                    'NEW_AUTOPAY_PCT', 
+                    'AGR_LDW_PCT', 
+                    'AGR_CLUB_PCT', 
+                    'AGR_NEWCLUB_PCT', 
+                    'INV_PURCH_LW', 
+                    'INV_SOLD_LW', 
+                    'TOT_IDLE_INV', 
+                    'PCT_IDLE_USED', 
+                    'IDLE_OVER_45', 
+                    'IDLE_OVER_90', 
+                    'IDLE_OVER_180', 
+                    'PCTFREETIME', 
+                    'TOT_ADV_PAY', 
+                    'NEG_PYMT', 
+                    'AVG_ITEM_AGR', 
+                    'AVG_AGR_CUST', 
+                    'DUP_CUST', 
+                    'FREEDAYS', 
+                    'WK_PROMO_DOLLARS', 
+                    'WK_PROMO_CUSTS', 
+                    'PROMO_CUST_RENT_RATIO', 
+                    'WK_AVG_PROMO_CUST', 
+                    'AVG_WKS_TO_PO', 
+                    'PCT_WITH_INSPECTION', 
+                    'PCT_ESTIMATE', 
+                    'PCT_CONVERSION', 
+                    'PR_WK_SOR', 
+                    'CUR_WK_SOR', 
+                    'WK_SVC_PAYOFF', 
+                    'WK_SVC_SKIP', 
+                    'SVC_WK_REV', 
+                    'SVC_CASH_SALES', 
+                    'SVC_SAT_CLOSE', 
+                    'SVC_SAT_CLOSE_7', 
+                    'SVC_SAT_CLOSE_14', 
+                    'SVC_SAT_CLOSE_21', 
+                    'SVC_SAT_CLOSE_30', 
+                    'SVC_SAT_CLOSE_OVR30', 
+                    'NUMOVERRIDES', 
+                    'OVERRIDEAMT', 
+                    'NUMDISPOSED', 
+                    'NUMMISCEXP', 
+                    'MISCEXPAMOUNT', 
+                    'NUMMISCCLUB', 
+                    'TPMSCOUNTSALES', 
+                    'TPMSSALEAMT', 
+                    'NEW_AGR', 
+                    'AOR'
+                ];
+
+
+        $table = view('import.table', [ 'cols' => $columns, 'rows' => VitalStat::all() ])->render();
+
+        $data = [
+                    'week' => date("w"),
+                    'year' => date("Y"),
+                    'table' => $table
+               ];
+        
+
+        return view('import.index', $data);
     }
 
     /**
@@ -120,9 +211,9 @@ class ImportController extends Controller
 
             if (trim($STORENAME) != 'STORENAME') {
 
-                $week = date("w");
+                $week = $request->get('week');
 
-                $year = date("Y");
+                $year = $request->get('year');
 
                 $store = explode(' ', $STORENAME);
 
@@ -238,7 +329,7 @@ class ImportController extends Controller
             }
         }
 
-        // return redirect()->route('importIndex');
+        return redirect()->route('importIndex');
     }
 
     /**

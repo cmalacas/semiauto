@@ -12,6 +12,8 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ManagerReportsController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -65,5 +67,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('import', [ImportController::class, 'index'])->name('importIndex');
 
+    Route::get('emp-changes', [EmployeeController::class, 'index'])->name('employeeIndex');
+
+    Route::get('mgr-reports', [ManagerReportsController::class, 'index'])->name('managerReportIndex');
+
+
+
     Route::post('import', [ImportController::class, 'store'])->name('import');
+
+    Route::post('employee-import', [ImportController::class, 'store'])->name('employeeImport');
 });
