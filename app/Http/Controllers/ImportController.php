@@ -101,7 +101,7 @@ class ImportController extends Controller
         $table = view('import.table', [ 'cols' => $columns, 'rows' => VitalStat::all() ])->render();
 
         $data = [
-                    'week' => date("w"),
+                    'week' => date("W"),
                     'year' => date("Y"),
                     'table' => $table
                ];
@@ -235,7 +235,7 @@ class ImportController extends Controller
 
                     $cond = ['store_id' => $store_id, 'week_number' => $week];
 
-                    echo $NEW_AGR;
+                    
 
                     $insert = [
                             'week_number' => $week,

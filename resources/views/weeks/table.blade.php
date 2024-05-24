@@ -15,21 +15,10 @@
             </tr>
         </thead>
         <tbody>
-          @foreach( $reports as $r )
-
-            <tr class="bg-white border-b">
-
-              <th class="px-6 py-4">{{ $r->store_id }}</th>
-
-              <td class="px-6 py-4">{{ $r->emp_id }}</td>
-
-              <td class="px-6 py-4">{{ $r->days }}</td>
-
-              <td class="px-6 py-4">{{ $r->units }}</td>
-
-            </tr>
-
-          @endforeach
-      </tbody>
+          
+        </tbody>
+        <tfoot>
+          
+        </tfoot>
     </table>
 </div>

@@ -14,8 +14,12 @@
 
                 
 
-                  <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
+                  <form action="{{ route('managerImport') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+
+                    <input type="number" name="week" value="{{ $week }}" />
+                     
+                    <input type="number" name="year" value="{{ $year }}" />
                     
                     <input type="file" name="file" accept=".csv">
                     <button type="submit">Import CSV</button>

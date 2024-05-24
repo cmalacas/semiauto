@@ -14,14 +14,16 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ManagerReportsController;
+use App\Http\Controllers\BonusController;
+use App\Http\Controllers\WeekController;
 
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
+    /*Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store']); */
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
@@ -71,9 +73,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('mgr-reports', [ManagerReportsController::class, 'index'])->name('managerReportIndex');
 
+    Route::get('bonus-cacl', [BonusController::class, 'index'])->name('bonusCalc');
 
+    Route::get('weeks', [WeekController::class, 'index'])->name('weeks');
 
     Route::post('import', [ImportController::class, 'store'])->name('import');
 
-    Route::post('employee-import', [ImportController::class, 'store'])->name('employeeImport');
+    Route::post('employee-import', [EmployeeController::class, 'store'])->name('employeeImport');
+
+    Route::post('manager-import', [ManagerReportsController::class, 'store'])->name('managerImport');
 });
