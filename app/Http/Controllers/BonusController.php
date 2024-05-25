@@ -8,7 +8,7 @@ use App\Models\BonusCalc;
 use App\Models\Bonus;
 use App\Models\Week;
 
-use Yajra\DataTables\Facades\DataTables;
+//use Yajra\DataTables\Facades\DataTables;
 
 class BonusController extends Controller
 {
@@ -39,9 +39,9 @@ class BonusController extends Controller
 
         $bonuses = BonusCalc::all();
 
-        // $table = view('bonus.table', [ 'cols' => $cols, 'bonuses' => $bonuses ] )->render();
+        $table = view('bonus.table', [ 'cols' => $cols, 'bonuses' => $bonuses ] )->render();
 
-        $table = DataTables::collection($bonuses)->toJson();
+        // $table = DataTables::collection($bonuses)->toJson();
 
         $data = [
                     'table' => $table

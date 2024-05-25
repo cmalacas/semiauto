@@ -307,7 +307,7 @@ class Bonus extends Model
 
             $totalBonus = $bonusSales + $bonusSalesMgr + $bonusTech + $bonusStoreMgr + $bonusService + $bonusLeadership + $bonusOneTime + $bonusCollections;
 
-            $bonusCalc = new BonusCalc;
+            /* $bonusCalc = new BonusCalc;
 
             $bonusCalc->emp_id = $e->emp_id;
             $bonusCalc->store_id = $e->store_id;
@@ -323,7 +323,24 @@ class Bonus extends Model
             $bonusCalc->bonus_one_time = $bonusOneTime;
             $bonusCalc->bonus_total = $totalBonus;
 
-            $bonusCalc->save();
+            $bonusCalc->save(); */
+
+            $data = [
+                'emp_id' => $e->emp_id,
+                'store_id' => $e->store_id,
+                'week_id' = $week,
+                'bonus_sales' => $bonusSales,
+                'bonus_sales_mgr' => $bonusSalesMgr,
+                'bonus_tech' => $bonusTech,
+                'bonus_collections' => $bonusCollections,
+                'bonus_store_mgr' => $bonusStoreMgr,
+                'bonus_service' => $bonusService,
+                'bonus_leadership' => $bonusLeadership,
+                'bonus_one_time' => $bonusOneTime,
+                'bonus_total' => $totalBonus
+            ];
+
+            BonusCalc::updateOrCreate();
 
         }
 
