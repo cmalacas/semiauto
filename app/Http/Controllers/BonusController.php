@@ -8,6 +8,8 @@ use App\Models\BonusCalc;
 use App\Models\Bonus;
 use App\Models\Week;
 
+use Yajra\DataTables\Facades\DataTables;
+
 class BonusController extends Controller
 {
     /**
@@ -18,15 +20,7 @@ class BonusController extends Controller
         $week = date("W");
         $year = date("Y");
 
-        if(!self::checkWeekExist($year, $week)){
-            
-            $data['table'] = "Error: Week $week not found in weeks table.";
-
-        } else {
-
-            Bonus::_get($week, $year);
-
-        }
+        Bonus::_get($week, $year);
 
         $cols = [
             'EMP ID',
@@ -45,7 +39,9 @@ class BonusController extends Controller
 
         $bonuses = BonusCalc::all();
 
-        $table = view('bonus.table', [ 'cols' => $cols, 'bonuses' => $bonuses ] )->render();
+        // $table = view('bonus.table', [ 'cols' => $cols, 'bonuses' => $bonuses ] )->render();
+
+        $table = DataTables::collection($bonuses)->toJson();
 
         $data = [
                     'table' => $table

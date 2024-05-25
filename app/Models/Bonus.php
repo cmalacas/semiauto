@@ -20,6 +20,8 @@ use App\Models\BonusCalc;
 
 use DB;
 
+use Carbon\Carbon;
+
 class Bonus extends Model
 {
     use HasFactory;
@@ -348,33 +350,44 @@ class Bonus extends Model
 
     static function getEndDate( $year, $week ) {
 
-        $endDate = Week::where('week_number', '=', $week)
+        /* $endDate = Week::where('week_number', '=', $week)
                     ->where('year', '=', $year)
                     ->first()
-                    ->end_date;
+                    ->end_date; */
+        $today = Carbon::now();
+
+        $endDate = $today->endOfWeek()->format("Y-m-d");
 
         return $endDate;
 
     }
 
-    static function checkTermination($emp_id, $enDate) {
+    static function checkTermination($emp_id, $endDate) {
 
         $result = Termination::where('emp_id', '=', $emp_id)
-                    ->get();
+                    ->first();        
 
-        if ($result->count() > 0) {
+        if ($result) {
 
-            $terminationDate = $resul->end_date;
+            $terminationDate = $result->end_date;
 
             if ($terminationDate < $endDate) {
 
                 $employee = Employee::where('emp_id')->first();
 
-                $employee->is_active = 0;
+                if ($employee) {
 
-                $employee->save();
+                    $employee->is_active = 0;
 
-                return true;
+                    $employee->save();
+
+                    return true;
+
+                } else {
+
+                    return false;
+
+                }
 
 
             } else {
@@ -399,13 +412,15 @@ class Bonus extends Model
 
     static function getWorkingDays( $year, $week ) {        
 
-        $days = Week::where('week_number', '=', $week)
+        /* $days = Week::where('week_number', '=', $week)
                     ->where('year','=', $year)
                     ->first()
                     ->working_days;
                    
 
-        return $days;
+        return $days; */
+
+        return 6;
 
     }
 

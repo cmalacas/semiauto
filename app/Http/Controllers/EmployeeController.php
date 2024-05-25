@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Employee;
+use App\Models\Termination;
 
 class EmployeeController extends Controller
 {
@@ -90,6 +91,17 @@ class EmployeeController extends Controller
                 ];
 
                 Employee::updateOrCreate( $condition, $values );
+
+                if ($status_code == 'T') {
+
+                    $termination = [
+                            'emp_id' => $emp_id,
+                            'end_date' => self::toMySql( str_replace(' - CDT', '', $status_date) )
+                        ];
+
+                    Termination::updateOrCreate(['emp_id' => $emp_id], $termination);
+
+                }
 
             }
 
