@@ -328,7 +328,7 @@ class Bonus extends Model
             $data = [
                 'emp_id' => $e->emp_id,
                 'store_id' => $e->store_id,
-                'week_id' = $week,
+                'week_id' => $week,
                 'bonus_sales' => $bonusSales,
                 'bonus_sales_mgr' => $bonusSalesMgr,
                 'bonus_tech' => $bonusTech,
@@ -340,7 +340,14 @@ class Bonus extends Model
                 'bonus_total' => $totalBonus
             ];
 
-            BonusCalc::updateOrCreate();
+            BonusCalc::updateOrCreate(
+                [
+                    'emp_id' => $e->emp_id,
+                    'store_id' => $e->store_id,
+                    'week_id' => $week
+                ],
+                $data
+            );
 
         }
 
