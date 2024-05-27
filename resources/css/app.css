@@ -1,3 +1,49 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.dt-layout-row {
+  display: table;
+  clear:both;
+  width: 100%;
+}
+
+.dt-layout-cell {
+  display: table-cell;
+  padding: 5px 0;
+}
+
+.dt-layout-cell.dt-start {
+
+}
+
+.dt-layout-cell.dt-end {
+  text-align: right;
+}
+
+.dt-paging-button {
+  display: inline-block;
+  padding: 0.5em 1em;
+  border: 1px solid transparent;
+  border-radius: 0.25em;
+  background-color: transparent;;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 2px;
+}
+
+.dt-paging-button.current {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+table tbody tr:hover {
+  background: #f0f8ff;
+}
+
+table tbody tr > * {
+  padding-left: 5px;
+  padding-right: 5px;
+}

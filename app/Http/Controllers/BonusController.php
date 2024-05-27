@@ -15,10 +15,33 @@ class BonusController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($week = 0, $year = 0)
     {
-        $week = date("W");
-        $year = date("Y");
+        if ($week == 0) {
+
+            $week = date("W");
+
+        }
+
+        if ($year == 0) {
+
+            $year = date("Y");
+
+        }
+
+        $startYear = 2024;
+
+        $years = [];
+
+        for($y = $startYear; $y <= $year; $y++) {
+
+            $years = [ $y ];
+
+        }
+
+        $weeks = [];
+
+        for( $i = 1; $i <= 52; $i++) $weeks[$i] = $i;
 
         Bonus::_get($week, $year);
 
@@ -37,14 +60,19 @@ class BonusController extends Controller
             'BONUS TOTAL',
         ];
 
-        $bonuses = BonusCalc::all();
+        $bonuses = BonusCalc::where('week_id', '=', $week)
+                    ->where('year', '=', $year)->get();
 
         $table = view('bonus.table', [ 'cols' => $cols, 'bonuses' => $bonuses ] )->render();
 
         // $table = DataTables::collection($bonuses)->toJson();
 
         $data = [
-                    'table' => $table
+                    'table' => $table,
+                    'weeks' => $weeks,
+                    'years' => $years,
+                    'current_year' => $year,
+                    'current_week' => $week
                 ];
 
         

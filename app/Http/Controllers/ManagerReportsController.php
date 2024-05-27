@@ -6,13 +6,22 @@ use Illuminate\Http\Request;
 
 use App\Models\ManagerReport;
 
+use DB;
+
 class ManagerReportsController extends Controller
 {
     public function index() {
 
-        $cols = ['Store', 'Employee ID', 'Days Worked', 'Units'];
+        $cols = ['Store ID', 'Store Name',  'Week',  'Employee ID', 'Employee', 'Days Worked', 'Units'];
 
-        $reports = ManagerReport::all();
+        $reports = ManagerReport::select(
+                        DB::raw('manager_reports.*'),
+                        DB::raw('CONCAT(employees.first_name, " " , employees.last_name) as employee_name'),
+                        DB::raw('stores.store_name')
+                    )
+                    ->join('stores', 'stores.store_id', '=', 'manager_reports.store_id')
+                    ->join('employees', 'employees.emp_id', '=', 'manager_reports.emp_id')
+                    ->get();
 
         $table = view('manager-reports.table', ['cols' => $cols, 'reports' => $reports])->render();
 

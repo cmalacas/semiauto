@@ -44,7 +44,7 @@ class ImportController extends Controller
                     'SKIP_RATIO', 
                     'SKIP_RATIO_MONTH', 
                     'REPOS', 
-                    '$ALIGN_PCT', 
+                    'ALIGN_PCT', 
                     'NEWALIGN_PCT', 
                     'AUTOPAY_PCT', 
                     'NEW_AUTOPAY_PCT', 
@@ -97,8 +97,18 @@ class ImportController extends Controller
                     'AOR'
                 ];
 
+        
+        $vitalStats = VitalStat::select(
+                            DB::raw('vital_stats.*'),
+                            'store_name'
+                        )
+                        ->leftJoin('stores', 'stores.store_id', '=', 'vital_stats.store_id')
+                        ->get();
 
-        $table = view('import.table', [ 'cols' => $columns, 'rows' => VitalStat::all() ])->render();
+        //print_r($vitalStats->toArray());
+
+
+        $table = view('import.table', [ 'cols' => $columns, 'rows' => $vitalStats ])->render();
 
         $data = [
                     'week' => date("W"),
@@ -157,7 +167,8 @@ class ImportController extends Controller
                 $SKIPS, 
                 $SKIP_RATIO, 
                 $SKIP_RATIO_MONTH, 
-                $REPOS, $ALIGN_PCT, 
+                $REPOS, 
+                $ALIGN_PCT, 
                 $NEWALIGN_PCT, 
                 $AUTOPAY_PCT, 
                 $NEW_AUTOPAY_PCT, 
@@ -206,7 +217,9 @@ class ImportController extends Controller
                 $NUMMISCCLUB, 
                 $TPMSCOUNTSALES, 
                 $TPMSSALEAMT, 
-                $NEW_AGR, 
+                $temp1,
+                $temp2,
+                $_NEW_AGR, 
                 $AOR ) = $data;
 
             if (trim($STORENAME) != 'STORENAME') {
@@ -217,7 +230,7 @@ class ImportController extends Controller
 
                 $store = explode(' ', $STORENAME);
 
-                
+                echo $AGR_NEWCLUB_PCT;
                 // $store_id = self::getStoreIdByStoreName($STORENAME);
 
                 // echo count($store);
@@ -229,20 +242,16 @@ class ImportController extends Controller
 
                 $store_id = end($store);
                 
-                if (count($store) > 1 && $store_id > 0) {
-
-                    
+                if (count($store) > 1 && $store_id > 0) {                    
 
                     $cond = ['store_id' => $store_id, 'week_number' => $week];
-
-                    
 
                     $insert = [
                             'week_number' => $week,
                             'store_id' => $store_id,
                             'year' => $year,
                             //'STORENAME' => $STORENAME, 
-                            //'MANAGER' => $MANAGER, 
+                            'MANAGER' => $MANAGER, 
                             'PR_WK_COR' => $PR_WK_COR, 
                             'CUR_WK_COR' => $CUR_WK_COR, 
                             'STRE_OPEN_DATE' => self::toMySql($STRE_OPEN_DATE), 
@@ -251,7 +260,7 @@ class ImportController extends Controller
                             'ANDER_PCT_COMP' => $ANDER_PCT_COMP, 
                             'WK_PAY_OFF' => $WK_PAY_OFF, 
                             'CUST_RENT' => $CUST_RENT, 
-                            'NEW_AGR' => (int)$NEW_AGR, 
+                            'new_agr' => $NEW_AGR, 
                             'agr_total' => 0,
                             'CASH_SALES' => $CASH_SALES, 
                             'SERVICE_REVENUE' => $SERVICE_REVENUE, 
@@ -271,11 +280,11 @@ class ImportController extends Controller
                             'REPOS' => $REPOS, 
                             'ALIGN_PCT' => $ALIGN_PCT, 
                             'NEWALIGN_PCT' => $NEWALIGN_PCT, 
-                            'AUTOPAY_PCT' => $AUTOPAY_PCT, 
+                            'autopay_pct' => $AUTOPAY_PCT, 
                             'NEW_AUTOPAY_PCT' => $NEW_AUTOPAY_PCT, 
                             'AGR_LDW_PCT' => $AGR_LDW_PCT, 
                             'AGR_CLUB_PCT' => $AGR_CLUB_PCT, 
-                            'AGR_NEWCLUB_PCT' => $AGR_NEWCLUB_PCT, 
+                            'agr_newclub_pct' => $AGR_NEWCLUB_PCT, 
                             'INV_PURCH_LW' => $INV_PURCH_LW, 
                             'INV_SOLD_LW' => $INV_SOLD_LW, 
                             'TOT_IDLE_INV' => $TOT_IDLE_INV, 
@@ -321,6 +330,8 @@ class ImportController extends Controller
                             //'NEW_AGR' => $NEW_AGR, 
                             'AOR' => $AOR 
                         ];
+
+                    //print_r($insert);
 
                     VitalStat::updateOrCreate($cond, $insert);
 

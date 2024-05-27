@@ -13,6 +13,7 @@ class BonusCalc extends Model
                             'emp_id',
                             'store_id',
                             'week_id',
+                            'year',
                             'bonus_sales',
                             'bonus_sales_mgr',
                             'bonus_tech',
