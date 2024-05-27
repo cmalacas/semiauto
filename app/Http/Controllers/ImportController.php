@@ -8,13 +8,14 @@ use App\Models\VitalStat;
 use App\Models\Store;
 
 use DB;
+use Carbon\Carbon;
 
 class ImportController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($week = 0, $year = 0)
     {
         $columns = [
                     'STORENAME', 
@@ -97,11 +98,25 @@ class ImportController extends Controller
                     'AOR'
                 ];
 
+        if ($week == 0) {
+
+            $week = date("W");
+
+        }
+
+        if ($year == 0) {
+
+            $year = date("Y");
+
+        }
+
         
         $vitalStats = VitalStat::select(
                             DB::raw('vital_stats.*'),
                             'store_name'
                         )
+                        ->where('week_number', '=', $week)
+                        ->where('year', '=', $year)
                         ->leftJoin('stores', 'stores.store_id', '=', 'vital_stats.store_id')
                         ->get();
 
@@ -110,10 +125,31 @@ class ImportController extends Controller
 
         $table = view('import.table', [ 'cols' => $columns, 'rows' => $vitalStats ])->render();
 
+        
+
+        $weeks = [];
+
+        for($i = 1; $i <= 52; $i++) {
+
+            $weeks[] = $i;
+
+        }
+
+        $startYear = 2024;
+
+        for($y = $startYear; $y <= date("Y"); $y++) {
+
+            $years[] = $y;
+
+        }
+
+
         $data = [
-                    'week' => date("W"),
-                    'year' => date("Y"),
-                    'table' => $table
+                    'week' => $week,
+                    'year' => $year,
+                    'table' => $table,
+                    'weeks' => $weeks,
+                    'years' => $years
                ];
         
 

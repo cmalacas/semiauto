@@ -12,20 +12,48 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                
+                    <div class="flex justify-between py-6">
 
-                  <form action="{{ route('managerImport') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+                        <div>
 
-                    <input type="number" name="week" value="{{ $week }}" />
-                     
-                    <input type="number" name="year" value="{{ $year }}" />
-                    
-                    <input type="file" name="file" accept=".csv">
-                    <button type="submit">Import CSV</button>
-                  </form>
+                            <select id="week" name="week" onChange="javascript:doSelect()">
+                                <option value="0">-- select week -- </option>
+                                @foreach($weeks as $w)
+                                    @if ($w == $week)
+                                        <option selected value="{{ $w }}">{{ $w }}</option>
+                                    @else 
+                                        <option value="{{ $w }}">{{ $w }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
 
-                    <div class="py-10">
+                            <select id="year" name="year" onChange="javascript:doSelect()">
+                                <option value="0">-- select year -- </option>
+                                @foreach($years as $y)
+                                    @if ($y == $year)
+                                        <option selected value="{{ $y }}">{{ $y }}</option>
+                                    @else 
+                                        <option value="{{ $y }}">{{ $y }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+
+                        </div>
+
+                        <form action="{{ route('managerImport') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+
+                            <input type="number" name="week" value="{{ $week }}" />
+                            
+                            <input type="number" name="year" value="{{ $year }}" />
+                            
+                            <input type="file" name="file" accept=".csv">
+                            <button type="submit">Import CSV</button>
+                        </form>
+
+                    </div>
+
+                    <div class="pt-2">
 
                         {!! $table !!}
 
@@ -44,6 +72,18 @@
 
 <script>
     let table = new DataTable('#manager-report-table');    
+
+
+    function doSelect() {
+
+        var week = document.getElementById('week').value;
+        var year = document.getElementById('year').value;
+
+        var app_url = "{{ env('APP_URL') }}";
+
+        location = app_url + '/mgr-reports/' + week + '/' + year;
+
+    }
 
 </script>
 

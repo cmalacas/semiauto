@@ -10,7 +10,19 @@ use DB;
 
 class ManagerReportsController extends Controller
 {
-    public function index() {
+    public function index($week = 0, $year = 0) {
+
+        if ($week == 0) {
+
+            $week = date("W");
+
+        }
+
+        if ($year == 0) {
+
+            $year = date("Y");
+
+        }
 
         $cols = ['Store ID', 'Store Name',  'Week',  'Employee ID', 'Employee', 'Days Worked', 'Units'];
 
@@ -19,16 +31,38 @@ class ManagerReportsController extends Controller
                         DB::raw('CONCAT(employees.first_name, " " , employees.last_name) as employee_name'),
                         DB::raw('stores.store_name')
                     )
+                    ->where('week', '=', $week)
+                    ->where('year', '=', $year)
                     ->join('stores', 'stores.store_id', '=', 'manager_reports.store_id')
                     ->join('employees', 'employees.emp_id', '=', 'manager_reports.emp_id')
                     ->get();
 
         $table = view('manager-reports.table', ['cols' => $cols, 'reports' => $reports])->render();
 
+        $weeks = [];
+
+        for($i = 1; $i <= 52; $i++) {
+
+            $weeks[] = $i;
+
+        }
+
+        $startYear = 2024;
+
+        for($y = $startYear; $y <= date("Y"); $y++) {
+
+            $years[] = $y;
+
+        }
+
+        
+
         $data = [
                     'table' => $table,
-                    'year' => date("Y"),
-                    'week' => date("W")
+                    'year' => $year,
+                    'week' => $week,
+                    'weeks' => $weeks,
+                    'years' => $years
         ];
 
         return view('manager-reports.index', $data);

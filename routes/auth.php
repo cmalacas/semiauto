@@ -68,11 +68,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('reporting/{week?}/{year?}', [ReportController::class, 'show']);
 
-    Route::get('import', [ImportController::class, 'index'])->name('importIndex');
+    Route::get('import/{week?}/{year?}', [ImportController::class, 'index'])->name('importIndex');
 
     Route::get('emp-changes', [EmployeeController::class, 'index'])->name('employeeIndex');
 
-    Route::get('mgr-reports', [ManagerReportsController::class, 'index'])->name('managerReportIndex');
+    Route::get('mgr-reports/{week?}/{year?}', [ManagerReportsController::class, 'index'])->name('managerReportIndex');
 
     Route::get('bonus-cacl/{week?}/{year?}', [BonusController::class, 'index'])->name('bonusCalc');
 
