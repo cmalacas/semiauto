@@ -16,6 +16,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ManagerReportsController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\WeekController;
+use App\Http\Controllers\BonusCheckRuleController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -67,15 +68,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('reporting/{week?}/{year?}', [ReportController::class, 'show']);
 
-    Route::get('import', [ImportController::class, 'index'])->name('importIndex');
+    Route::get('import/{week?}/{year?}', [ImportController::class, 'index'])->name('importIndex');
 
     Route::get('emp-changes', [EmployeeController::class, 'index'])->name('employeeIndex');
 
-    Route::get('mgr-reports', [ManagerReportsController::class, 'index'])->name('managerReportIndex');
+    Route::get('mgr-reports/{week?}/{year?}', [ManagerReportsController::class, 'index'])->name('managerReportIndex');
 
-    Route::get('bonus-cacl', [BonusController::class, 'index'])->name('bonusCalc');
+    Route::get('bonus-cacl/{week?}/{year?}', [BonusController::class, 'index'])->name('bonusCalc');
 
     Route::get('weeks', [WeekController::class, 'index'])->name('weeks');
+
+    Route::get('bonus-check-rules', [BonusCheckRuleController::class, 'index'])->name('bonus-check-rules');
 
     Route::post('import', [ImportController::class, 'store'])->name('import');
 

@@ -92,7 +92,7 @@ class Bonus extends Model
 
                     $newAgreemens = $stats->new_agr;
 
-                    if (in_array( $e->emp_id, $listOfSalesExceptions)) {
+                    if (in_array( $e->emp_id, $listOfSalesMgrExceptions)) {
 
                         $bonusSalesMgr += $newAgreements * 2.5;
 
@@ -329,6 +329,7 @@ class Bonus extends Model
                 'emp_id' => $e->emp_id,
                 'store_id' => $e->store_id,
                 'week_id' => $week,
+                'year' => $year,
                 'bonus_sales' => $bonusSales,
                 'bonus_sales_mgr' => $bonusSalesMgr,
                 'bonus_tech' => $bonusTech,
@@ -340,7 +341,15 @@ class Bonus extends Model
                 'bonus_total' => $totalBonus
             ];
 
-            BonusCalc::updateOrCreate();
+            BonusCalc::updateOrCreate(
+                [
+                    'emp_id' => $e->emp_id,
+                    'store_id' => $e->store_id,
+                    'week_id' => $week,
+                    'year' => $year
+                ],
+                $data
+            );
 
         }
 
@@ -465,7 +474,8 @@ class Bonus extends Model
     static function getListSalesMgrException() {
 
         $result = SalesMgrException::where('is_deleted', '=', 0)
-                    ->get();
+                    ->get()
+                    ->toArray();
 
         return $result;
 
