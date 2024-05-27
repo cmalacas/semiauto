@@ -8,6 +8,8 @@ use App\Models\BonusCalc;
 use App\Models\Bonus;
 use App\Models\Week;
 
+use App\Models\VitalStat;
+
 //use Yajra\DataTables\Facades\DataTables;
 
 class BonusController extends Controller
@@ -43,7 +45,16 @@ class BonusController extends Controller
 
         for( $i = 1; $i <= 52; $i++) $weeks[$i] = $i;
 
-        Bonus::_get($week, $year);
+        $bonuses = [];
+
+        if (self::weekHasData($week, $year)) {
+
+            Bonus::_get($week, $year);
+
+            $bonuses = BonusCalc::where('week_id', '=', $week)
+                    ->where('year', '=', $year)->get();
+
+        }
 
         $cols = [
             'EMP ID',
@@ -60,9 +71,7 @@ class BonusController extends Controller
             'BONUS TOTAL',
         ];
 
-        $bonuses = BonusCalc::where('week_id', '=', $week)
-                    ->where('year', '=', $year)->get();
-
+        
         $table = view('bonus.table', [ 'cols' => $cols, 'bonuses' => $bonuses ] )->render();
 
         // $table = DataTables::collection($bonuses)->toJson();
@@ -80,9 +89,9 @@ class BonusController extends Controller
         return view('bonus.index', $data);
     }
 
-    static function checkWeekExist($year,$week)
+    static function weekHasData($week, $year)
     {
-        $result = Week::where('year', '=', $year)
+        $result = VitalStat::where('year', '=', $year)
                     ->where('week_number', '=', $week )
                     ->first();
 

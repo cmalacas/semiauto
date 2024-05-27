@@ -67,13 +67,13 @@ class Bonus extends Model
 
                     $unitTarget = 6.33 * $workingDays;
 
-                    if ($unitSold < $unitTarget) {
+                    if ($unitsSold < $unitTarget) {
 
-                        $bonusSales += $unitSold * 2.5;
+                        $bonusSales += $unitsSold * 2.5;
 
                     } else {
 
-                        $bonusSales += $unitSold * 3.75;
+                        $bonusSales += $unitsSold * 3.75;
 
                     }
 
@@ -264,7 +264,7 @@ class Bonus extends Model
                     
                     $partsLabor = self::getServicePartsLabor($year,$week, $e->emp_id);
                     
-                    $serviceTotal = self::getServiceTotal($year,$weekr,$partsLabor->store_id);
+                    $serviceTotal = self::getServiceTotal($year,$week,$partsLabor->store_id);
 
                     $laborMultiplier = 0.1;
                     $partsMultiplier = 0;
@@ -460,7 +460,7 @@ class Bonus extends Model
                     
         if ($units) {
 
-            return $unis->units;
+            return $units->units;
 
         } else {
 
@@ -558,5 +558,29 @@ class Bonus extends Model
 
         return $result;
 
+    }
+
+    static function getServiceTotal($year, $weekNumber, $storeID)
+    {
+        /* $con = $this->openConnection();
+         $query = $con->prepare("SELECT er.store_id, ROUND(SUM(mv.parts) + SUM(mv.labor), 2) AS TotalPartsAndLabor FROM `employee_roles` er INNER JOIN mechanic_values mv ON mv.emp_id = er.emp_id WHERE mv.year = ? AND mv.week_number = ? AND er.store_id = ? GROUP BY er.store_id");
+         if($query->execute([$year, $weekNumber, $storeID])){
+            $res = $query->fetch();
+            return $res['TotalPartsAndLabor'];
+         } */
+
+        $result = EmployeeRole::select(
+                        DB::raw('employee_roles.store_id'),
+                        DB::raw('ROUND(SUM(mechanic_values.parts) + SUM(mechanic_values.labor), 2) as TotalPartsAndLabor')
+                    )
+                    ->join('mechanic_values', 'mechanic_values.emp_id', '=', 'employee_roles.emp_id')
+                    ->where('mechanic_values.year', '=', $year)
+                    ->where('mechanic_values.week_number', '=', $weekNumber)
+                    ->where('employee_roles.store_id', '=', $storeID)
+                    ->groupBy('employee_roles.store_id')
+                    ->first()
+                    ->TotalPartsAndLabor;
+
+        return $result;
     }
 } 

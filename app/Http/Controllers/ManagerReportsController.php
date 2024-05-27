@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\ManagerReport;
+use App\Models\Sale;
 
 use DB;
 
@@ -91,13 +92,22 @@ class ManagerReportsController extends Controller
                 $cond = ['emp_id' => $emp_id, 'week' => $week, 'year' => $year, 'store_id' => $store_id];
 
                 $values = [
+                        'emp_id' => $emp_id,
                         'week' => $week,
                         'year' => $year,
                         'days' => $days,
+                        'store_id' => $store_id,
                         'units' => (int)$units
                     ];
 
                 ManagerReport::updateOrCreate( $cond, $values );
+
+                $sale = [ 'week_number' => $week, 'year' => $year, 'emp_id' => $emp_id, 'store_id' => $store_id ];
+
+                $saleValue = [ 'week_number' => $week, 'year' => $year, 'emp_id' => $emp_id, 'store_id' => $store_id, 'units' => (int)$units ];
+
+
+                Sale::updateOrCreate( $sale, $saleValue );
 
             }
 
