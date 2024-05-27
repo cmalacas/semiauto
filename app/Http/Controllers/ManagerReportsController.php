@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\ManagerReport;
 use App\Models\Sale;
+use App\Models\StoreUnit;
 
 use DB;
 
@@ -115,7 +116,32 @@ class ManagerReportsController extends Controller
 
         }
 
-        return redirect()->route('managerReportIndex');
+        $results = Sale::select(
+                        'store_id',
+                        'week_number',
+                        'year',
+                        DB::raw('SUM(units) as units')
+                    )
+                    ->groupBy('store_id')
+                    ->where('week_number', $week)
+                    ->where('year', '=', $year)
+                    ->get();
+
+        foreach($results as $r) {
+
+            StoreUnit::updateOrCreate(
+                ['store_id' => $r->store_id, 'week_number' => $week, 'year' => $year],
+                [
+                    'store_id' => $r->store_id,
+                    'week_number' => $r->week_number,
+                    'year' => $r->year,
+                    'units' => $r->units
+                ]
+            );
+
+        }
+
+        return redirect(env('APP_URL') . '/mgr-reports/' . $week . '/' . $year);
 
     }
 }

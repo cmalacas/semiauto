@@ -266,7 +266,7 @@ class ImportController extends Controller
 
                 $store = explode(' ', $STORENAME);
 
-                echo $AGR_NEWCLUB_PCT;
+                // echo $AGR_NEWCLUB_PCT;
                 // $store_id = self::getStoreIdByStoreName($STORENAME);
 
                 // echo count($store);
@@ -376,7 +376,7 @@ class ImportController extends Controller
             }
         }
 
-        return redirect()->route('importIndex');
+        return redirect(env('APP_URL') . '/import/' . $week . '/' . $year);
     }
 
     /**
