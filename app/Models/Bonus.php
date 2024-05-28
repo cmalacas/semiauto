@@ -77,6 +77,22 @@ class Bonus extends Model
 
                     }
 
+                    BonusCalc::updateOrCreate(
+                                [
+                                    'emp_id' => $e->emp_id, 
+                                    'store_id' => $e->store_id,
+                                    'week_id' => $week,
+                                    'year' => $year
+                                ],                            
+                                [
+                                    'emp_id' => $e->emp_id, 
+                                    'store_id' => $e->store_id,
+                                    'week_id' => $week,
+                                    'year' => $year,
+                                    'bonus_sales' => $bonusSales
+                                ]
+                            );
+
 
                 }
 
@@ -88,9 +104,11 @@ class Bonus extends Model
 
                 $stats = self::getVitalStats($e->store_id, $week, $year);
 
+                // print_r($stats->toArray());
+
                 if (!empty($stats->new_agr)) {
 
-                    $newAgreemens = $stats->new_agr;
+                    $newAgreements = $stats->new_agr;
 
                     if (in_array( $e->emp_id, $listOfSalesMgrExceptions)) {
 
@@ -101,6 +119,22 @@ class Bonus extends Model
                         $bonusSalesMgr += $newAgreements * 5;
 
                     }
+
+                    BonusCalc::updateOrCreate(
+                        [
+                            'emp_id' => $e->emp_id, 
+                            'store_id' => $e->store_id,
+                            'week_id' => $week,
+                            'year' => $year
+                        ],                            
+                        [
+                            'emp_id' => $e->emp_id, 
+                            'store_id' => $e->store_id,
+                            'week_id' => $week,
+                            'year' => $year,
+                            'bonus_sales_mgr' => $bonusSalesMgr
+                        ]
+                    );
 
                 }
 
@@ -124,17 +158,34 @@ class Bonus extends Model
 
                 }
 
+                BonusCalc::updateOrCreate(
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year
+                    ],                            
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year,
+                        'bonus_tech' => $bonusTech
+                    ]
+                );
+
                }
 
             }
 
             if ($e->BonusType == 'BonusCollections') {
 
-               $stats = self::getVitalStats( $e->store_id, $week, $year);
+                $stats = self::getVitalStats( $e->store_id, $week, $year);
 
-               if (!empty($stats->agr_total)) {
 
-                $totalAgreement = $stats->agr_tottal;
+               if (!empty($stats->AOR)) {
+
+                $totalAgreement = $stats->AOR;
                 $satClose = $stats->sat_close / 100;
                 $autopayPercent = $stats->autopay_pct;
 
@@ -160,17 +211,31 @@ class Bonus extends Model
 
                }
 
+               BonusCalc::updateOrCreate(
+                [
+                    'emp_id' => $e->emp_id, 
+                    'store_id' => $e->store_id,
+                    'week_id' => $week,
+                    'year' => $year
+                ],                            
+                [
+                    'emp_id' => $e->emp_id, 
+                    'store_id' => $e->store_id,
+                    'week_id' => $week,
+                    'year' => $year,
+                    'bonus_collections' => $bonusCollections
+                ]
+            );
+
             }
 
             if ($e->BonusType == 'BonusStoreMgr') {
 
                 $stats = self::getVitalStats($e->store_id, $week, $year);  
 
-                $newAgreements = 1;
-                
                 if (!empty($stats->new_agr)) {
 
-                    $newAgreemens = $stats->new_agr;
+                    $newAgreements = $stats->new_agr;
 
                 }
 
@@ -178,10 +243,9 @@ class Bonus extends Model
 
                 if(!empty($stats->sat_close)){
 
-
-                    $newAgreements = $stats->new_year;
+                    $newAgreements = $stats->new_agr;
                     $satClose = $stats->sat_close / 100;
-                    $autopayPercent = $stats->autopay_pct;
+                    $autopayPercent = $stats->autopay_pct / 100;
                     $newAlignmentPercent = $stats->new_alignment_pct / 100;
                     $newClubPercent = $stats->agr_newclub_pct / 100;    
                     $unverified = $stats->unverified;
@@ -190,24 +254,37 @@ class Bonus extends Model
                     $initStoreMgrBon = 10 * $newAgreements;
 
                     $satMultiplier = 1;
+
                     if ($satClose <= 0.10) {
+
                         if ($satClose <= 0.08) {
+
                             $satMultiplier = 1.1;
+
                         } else {
+
                             $satMultiplier = 1;
+
                         }
+
                     } else {
+
                         $satMultiplier = 0.9;
-                    }
+
+                    } 
 
                     $initStoreMgrBon = $initStoreMgrBon * $satMultiplier;
 
                     $newAlignmentMultiplier = 1;
 
                     if ($newAlignmentPercent >= 0.85) {
+
                         $newAlignmentMultiplier += 0.1;
+
                     } else {
+
                         $newAlignmentMultiplier -= 0.1;
+
                     }
 
                     $initStoreMgrBon = $initStoreMgrBon * $newAlignmentMultiplier;
@@ -221,9 +298,6 @@ class Bonus extends Model
                         $newClubPercentMultiplier = 0.9;
                     }
 
-
-
-
                     $initStoreMgrBon = $initStoreMgrBon * $newClubPercentMultiplier;
 
                     $autopayPercentMultiplier = 1;
@@ -234,6 +308,7 @@ class Bonus extends Model
                     $initStoreMgrBon = $initStoreMgrBon * $autopayPercentMultiplier;
 
                     $unverifiedMultiplier = 1;
+                    
                     if ($unverified === 3) {
                         $unverifiedMultiplier -= 0.05;
                     } elseif ($unverified === 4) {
@@ -241,6 +316,7 @@ class Bonus extends Model
                     } elseif ($unverified > 4) {
                         $unverifiedMultiplier -= 0.15;
                     }
+                    
                     $initStoreMgrBon = $initStoreMgrBon * $unverifiedMultiplier;
                     
                     $errorsMultiplier = 1;
@@ -252,9 +328,29 @@ class Bonus extends Model
                         $errorsMultiplier -= 0.15;
                     }
                     
-                    $initStoreMgrBon = $initStoreMgrBon * $errorsMultiplier;
+                    $initStoreMgrBon = $initStoreMgrBon * $errorsMultiplier; 
 
-                }
+                } 
+
+                $bonusStoreMgr += $initStoreMgrBon;
+
+                // echo sprintf("bonus: %s init: %s<br />", $bonusStoreMgr, $initStoreMgrBon);
+
+                BonusCalc::updateOrCreate(
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year
+                    ],                            
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year,
+                        'bonus_store_mgr' => $bonusStoreMgr
+                    ]
+                );
 
             }
 
@@ -286,11 +382,43 @@ class Bonus extends Model
                     $bonusService += ($partsLabor->labor * $laborMultiplier) + ($partsLabor->parts * $partsMultiplier);
                 }
 
+                BonusCalc::updateOrCreate(
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year
+                    ],                            
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year,
+                        'bonus_service' => $bonusService
+                    ]
+                );
+
             }
 
             if ($e->BonusType == 'BonusLeadership') {
 
-                $bonusLeadership += $e->leadership_bonus;
+                //$bonusLeadership += $e->leadership_bonus;
+
+                BonusCalc::updateOrCreate(
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year
+                    ],                            
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year,
+                        'bonus_leadership' => $e->leadership_bonus
+                    ]
+                );
 
             }
 
@@ -303,9 +431,27 @@ class Bonus extends Model
                     }
                 }
 
+                BonusCalc::updateOrCreate(
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year
+                    ],                            
+                    [
+                        'emp_id' => $e->emp_id, 
+                        'store_id' => $e->store_id,
+                        'week_id' => $week,
+                        'year' => $year,
+                        'bonus_one_time' => $bonusOneTime
+                    ]
+                );
+
             }
 
-            $totalBonus = $bonusSales + $bonusSalesMgr + $bonusTech + $bonusStoreMgr + $bonusService + $bonusLeadership + $bonusOneTime + $bonusCollections;
+            // echo sprintf("e: %s bonus sales mgr: %s<br />" , $e->emp_id, $bonusSalesMgr);
+
+            //$totalBonus = $bonusSales + $bonusSalesMgr + $bonusTech + $bonusStoreMgr + $bonusService + $bonusLeadership + $bonusOneTime + $bonusCollections;
 
             /* $bonusCalc = new BonusCalc;
 
@@ -325,7 +471,7 @@ class Bonus extends Model
 
             $bonusCalc->save(); */
 
-            $data = [
+            /* $data = [
                 'emp_id' => $e->emp_id,
                 'store_id' => $e->store_id,
                 'week_id' => $week,
@@ -339,9 +485,9 @@ class Bonus extends Model
                 'bonus_leadership' => $bonusLeadership,
                 'bonus_one_time' => $bonusOneTime,
                 'bonus_total' => $totalBonus
-            ];
+            ]; */
 
-            BonusCalc::updateOrCreate(
+            /* BonusCalc::updateOrCreate(
                 [
                     'emp_id' => $e->emp_id,
                     'store_id' => $e->store_id,
@@ -349,9 +495,15 @@ class Bonus extends Model
                     'year' => $year
                 ],
                 $data
-            );
+            ); */
 
         }
+
+        BonusCalc::query()->update(['bonus_total' => DB::raw('bonus_sales + bonus_sales_mgr + bonus_tech + bonus_collections + bonus_store_mgr + bonus_service + bonus_leadership + bonus_one_time')]);
+
+        //DB::query("UPDATE bonus_calcs SET bonus_total = bonus_sales + bonus_sales_mgr + bonus_tech + bonus_collections + bonus_store_mgr + bonus_service + bonus_leadership + bonus_one_time");
+
+        // echo "UPDATE bonus_calcs SET bonus_total = bonus_sales + bonus_sales_mgr + bonus_tech + bonus_collections + bonus_store_mgr + bonus_service + bonus_leadership + bonus_one_time";
 
         return $bonuses;
 
