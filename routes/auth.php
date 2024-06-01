@@ -85,4 +85,6 @@ Route::middleware('auth')->group(function () {
     Route::post('employee-import', [EmployeeController::class, 'store'])->name('employeeImport');
 
     Route::post('manager-import', [ManagerReportsController::class, 'store'])->name('managerImport');
+
+    Route::get('/bonus-log', [BonusController::class, 'log'])->name('bonusLog');
 });

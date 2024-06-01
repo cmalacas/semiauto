@@ -10,6 +10,10 @@ use App\Models\Week;
 
 use App\Models\VitalStat;
 
+use App\Models\Store;
+
+use DB;
+
 //use Yajra\DataTables\Facades\DataTables;
 
 class BonusController extends Controller
@@ -107,33 +111,69 @@ class BonusController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function log( $year = 0 )
     {
-        //
+        if ($year == 0) {
+
+            $year = date("Y");
+
+        }
+
+        $bonus = BonusCalc::find(1);
+
+
+        $minWeek = 1; //self::get_min_week( $year );
+        $maxWeek = 52; //self::get_max_week( $year );
+
+        $states = self::get_store_states();
+
+        $forTable = [
+                        'minWeek' => $minWeek,
+                        'maxWeek' => $maxWeek,
+                        'states' => $states,
+                        'bonus' => $bonus,
+                        'year' => $year
+                    ];
+
+        $table = view('bonus.log-table', $forTable)->render();
+
+        $data = [
+                    'table' => $table
+                ];
+
+        return view('bonus.log', $data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    static function get_min_week( $year )
     {
-        //
+        return VitalStat::select(DB::raw('MIN(week_number) as week'))
+                    ->where('year', '=', $year)
+                    ->first()
+                    ->week;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function get_max_week( $year )
     {
-        //
+        return VitalStat::select(DB::raw('MAX(week_number) as week'))
+                    ->where('year', '=', $year)
+                    ->first()
+                    ->week;
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function get_store_states()
     {
-        //
+        return Store::select('state', 'state_name')
+                    ->groupBy('state_name')
+                    ->get();
     }
 
     /**
